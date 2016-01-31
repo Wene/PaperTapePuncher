@@ -13,6 +13,8 @@
 #define PinTransportMotor 11
 #define PinStepSensor 12
 
+int pins[] = {PinBit0, PinBit1, PinBit2, PinBit3, PinBit4, PinBit5, PinBit6, PinBit7};
+
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(115200);
@@ -32,5 +34,22 @@ void setup() {
 }
 
 void loop() {
+  delay(5000);
+  for(int i = 0; i < 25; i++)
+  {
+    digitalWrite(PinTransportMotor, HIGH);
+    delay(2);
+    digitalWrite(PinTransportMotor, LOW);
+    delay(18);
+  }
 
+  delay(2000);
+
+  for(int i = 0; i < 8; i++)
+  {
+    digitalWrite(pins[i], HIGH);
+    delay(2);
+    digitalWrite(pins[i], LOW);
+    delay(18);
+  }
 }
