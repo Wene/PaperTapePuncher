@@ -43,13 +43,17 @@ void loop() {
     delay(18);
   }
 
-  delay(2000);
+  delay(5000);
 
   for(int i = 0; i < 8; i++)
   {
     digitalWrite(pins[i], HIGH);
     delay(2);
     digitalWrite(pins[i], LOW);
-    delay(18);
+    delay(8);
+    digitalWrite(PinTransportMotor, HIGH);
+    delay(2);
+    digitalWrite(PinTransportMotor, LOW);
+    delay(8);
   }
 }
