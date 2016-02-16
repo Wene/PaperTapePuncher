@@ -35,25 +35,17 @@ void setup() {
 
 void loop() {
   delay(5000);
-  for(int i = 0; i < 25; i++)
-  {
-    digitalWrite(PinTransportMotor, HIGH);
-    delay(2);
-    digitalWrite(PinTransportMotor, LOW);
-    delay(18);
-  }
-
-  delay(5000);
 
   for(int i = 0; i < 8; i++)
   {
     digitalWrite(pins[i], HIGH);
-    delay(2);
-    digitalWrite(pins[i], LOW);
-    delay(8);
+    digitalWrite(PinTransportHole, HIGH);
     digitalWrite(PinTransportMotor, HIGH);
     delay(2);
+    digitalWrite(pins[i], LOW);
+    digitalWrite(PinTransportHole, LOW);
     digitalWrite(PinTransportMotor, LOW);
-    delay(8);
+    delay(18);
   }
+
 }
