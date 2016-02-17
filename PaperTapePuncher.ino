@@ -13,7 +13,20 @@
 #define PinTransportMotor 11
 #define PinStepSensor 12
 
+#define BufferSize 10
+
 int pins[] = {PinBit0, PinBit1, PinBit2, PinBit3, PinBit4, PinBit5, PinBit6, PinBit7};
+
+byte buffArray[BufferSize]; // Buffer array, used as ring buffer
+int buffWritePos = 0;       // Write position - write at this position, increment afterwards.
+int buffReadPos = 0;        // Read position - read at this position, increment afterwards.
+int buffLevel = 0;          // Distance between read and write position. Overflow detected when larger than BufferSize 
+int buffValue;
+
+int lastTime = 0;
+int highTime = 20;
+int lowTime = 180;
+bool isHigh = false;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
@@ -34,7 +47,63 @@ void setup() {
 }
 
 void loop() {
-  delay(5000);
+  while(Serial.available())
+  {
+    buffValue = Serial.read();
+    if(buffValue >= 0 && buffValue <= 255)
+    {
+      buffArray[buffWritePos] = buffValue;
+      buffWritePos++;
+      buffLevel++;
+      if(buffWritePos >= BufferSize)
+      {
+        buffWritePos = 0;
+      }
+      if(buffLevel > BufferSize) {
+        Serial.println("Buffer overflow");
+      }
+    }
+  }
+  
+  if(isHigh)
+  {
+    if(millis() > lastTime + highTime)
+    {
+      digitalWrite(PinTransportHole, LOW);
+      digitalWrite(PinTransportMotor, LOW);
+      for(int i = 0; i < 8; i++)
+      {
+        digitalWrite(pins[i], LOW);
+      }
+      isHigh = false;
+      lastTime = millis();
+    }
+  }
+  else
+  {
+    if(millis() > lastTime + lowTime)
+    {
+      if(buffLevel)
+      {
+        buffValue = buffArray[buffReadPos];
+        buffReadPos++;
+        buffLevel--;
+        if(buffReadPos >= BufferSize)
+        {
+          buffReadPos = 0;
+        }
+        
+        // Insert punching here...
+        Serial.print("Punching ");
+        Serial.println(char(buffValue));
+        
+        isHigh = true;
+        lastTime = millis();
+      }
+    }
+  }
+  
+/*
 
   for(int i = 0; i < 8; i++)
   {
@@ -47,5 +116,7 @@ void loop() {
     digitalWrite(PinTransportMotor, LOW);
     delay(18);
   }
+
+*/
 
 }
