@@ -1,6 +1,8 @@
 /* This software is written for Arduino boards and turn it into a
    Control unit replacement for FACIT Paper tape puncher. */
 
+#include "fifo.h"
+
 #define PinBit0 10
 #define PinBit1 2
 #define PinBit2 3
@@ -13,20 +15,17 @@
 #define PinTransportMotor 11
 #define PinStepSensor 12
 
-#define BufferSize 10
-
 int pins[] = {PinBit0, PinBit1, PinBit2, PinBit3, PinBit4, PinBit5, PinBit6, PinBit7};
 
-byte buffArray[BufferSize]; // Buffer array, used as ring buffer
-int buffWritePos = 0;       // Write position - write at this position, increment afterwards.
-int buffReadPos = 0;        // Read position - read at this position, increment afterwards.
-int buffLevel = 0;          // Distance between read and write position. Overflow detected when larger than BufferSize 
-int buffValue;
+Fifo writeBuffer;
 
-int lastTime = 0;
-int highTime = 20;
-int lowTime = 180;
+unsigned long lastTime = 0;
+unsigned long now = 0;
+unsigned long highTime = 2;
+unsigned long lowTime = 18;
 bool isHigh = false;
+int value = 0;
+bool ok = false;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
@@ -44,65 +43,55 @@ void setup() {
   pinMode(PinTransportHole, OUTPUT);   // transport hole
   pinMode(PinTransportMotor, OUTPUT);  // Motor step
   pinMode(PinStepSensor, INPUT);       // Sensor for steps from manual operation
+  
+  delay(5000);
+  Serial.println("Ready");
 }
 
 void loop() {
   while(Serial.available())
   {
-    buffValue = Serial.read();
-    if(buffValue >= 0 && buffValue <= 255)
+    value = Serial.read();
+    if(value >= 0 && value < 256)
     {
-      buffArray[buffWritePos] = buffValue;
-      buffWritePos++;
-      buffLevel++;
-      if(buffWritePos >= BufferSize)
+      if(!writeBuffer.add(value))
       {
-        buffWritePos = 0;
-      }
-      if(buffLevel > BufferSize) {
         Serial.println("Buffer overflow");
       }
     }
-  }
-  
-  if(isHigh)
-  {
-    if(millis() > lastTime + highTime)
+    else
     {
-      digitalWrite(PinTransportHole, LOW);
-      digitalWrite(PinTransportMotor, LOW);
-      for(int i = 0; i < 8; i++)
-      {
-        digitalWrite(pins[i], LOW);
-      }
-      isHigh = false;
-      lastTime = millis();
+      Serial.println("Read error");
     }
   }
-  else
+
+  now = millis();
+  if(isHigh && now > (lastTime + highTime))
   {
-    if(millis() > lastTime + lowTime)
+    digitalWrite(PinTransportHole, LOW);
+    digitalWrite(PinTransportMotor, LOW);
+    for(int i = 0; i < 8; i++)
     {
-      if(buffLevel)
-      {
-        buffValue = buffArray[buffReadPos];
-        buffReadPos++;
-        buffLevel--;
-        if(buffReadPos >= BufferSize)
-        {
-          buffReadPos = 0;
-        }
-        
-        // Insert punching here...
-        Serial.print("Punching ");
-        Serial.println(char(buffValue));
-        
-        isHigh = true;
-        lastTime = millis();
-      }
+      digitalWrite(pins[i], LOW);
+    }
+    isHigh = false;
+    lastTime = now;
+  }
+  else if(!isHigh && now > (lastTime + lowTime))
+  {
+    value = writeBuffer.take(ok);
+    if(ok)
+    {      
+      // Insert punching here...
+      Serial.print("Punching ");
+      Serial.println(char(value));
+            
+      isHigh = true;
+      lastTime = now;
     }
   }
-  
+}
+
 /*
 
   for(int i = 0; i < 8; i++)
@@ -119,4 +108,3 @@ void loop() {
 
 */
 
-}
