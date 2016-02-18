@@ -82,9 +82,85 @@ void loop() {
     value = writeBuffer.take(ok);
     if(ok)
     {      
-      // Insert punching here...
-      Serial.print("Punching ");
+      if(value & 1)
+      {
+        Serial.print("o");
+        digitalWrite(pins[0], HIGH);
+      }
+      else
+      {
+        Serial.print(".");
+      }
+      if(value & 2)
+      {
+        Serial.print("o");
+        digitalWrite(pins[1], HIGH);
+      }
+      else
+      {
+        Serial.print(".");
+      }
+      if(value & 4)
+      {
+        Serial.print("o");
+        digitalWrite(pins[2], HIGH);
+      }
+      else
+      {
+        Serial.print(".");
+      }
+      Serial.print(":");
+      if(value & 8)
+      {
+        Serial.print("o");
+        digitalWrite(pins[3], HIGH);
+      }
+      else
+      {
+        Serial.print(".");
+      }
+      if(value & 16)
+      {
+        Serial.print("o");
+        digitalWrite(pins[4], HIGH);
+      }
+      else
+      {
+        Serial.print(".");
+      }
+      if(value & 32)
+      {
+        Serial.print("o");
+        digitalWrite(pins[5], HIGH);
+      }
+      else
+      {
+        Serial.print(".");
+      }
+      if(value & 64)
+      {
+        Serial.print("o");
+        digitalWrite(pins[6], HIGH);
+      }
+      else
+      {
+        Serial.print(".");
+      }
+      if(value & 128)
+      {
+        Serial.print("o");
+        digitalWrite(pins[7], HIGH);
+      }
+      else
+      {
+        Serial.print(".");
+      }
+      
+      Serial.print("  ");
       Serial.println(char(value));
+
+      digitalWrite(PinTransportHole, HIGH);
+      digitalWrite(PinTransportMotor, HIGH);
             
       isHigh = true;
       lastTime = now;
