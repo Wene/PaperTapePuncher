@@ -42,8 +42,7 @@ bool Fifo::add(byte value)
   }
   if(level > BufferSize)
   {
-    level = 0;
-    posRead = posWrite;
+    clear();
     return false;
   }
   else
@@ -62,5 +61,11 @@ bool Fifo::available()
   {
     return false;
   }
+}
+
+void Fifo::clear()
+{
+  posRead = posWrite;
+  level = 0;
 }
 

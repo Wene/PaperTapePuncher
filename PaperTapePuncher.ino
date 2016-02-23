@@ -30,6 +30,7 @@ unsigned long highTime = 2;
 unsigned long lowTime = 18;
 bool isHigh = false;
 int value = 0;
+byte letter = 0;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
@@ -77,12 +78,8 @@ void loop() {
   }
   while(Serial.available())
   {
-    int command;
-    byte letter;
-    
-    command = Serial.read();
-    letter = command;
-    
+    value = Serial.read();
+    letter = value;
     Serial.println();
     
     switch(letter)
@@ -131,7 +128,30 @@ void loop() {
       value = Serial.read();
       if(value >= 0 && value < 256)
       {
-        if(!writeBuffer.add(value))
+        switch(mode)
+        {
+          case hex:
+            
+            break;
+          case dec:
+            
+            break;
+          case ascii:
+
+            break;
+          case binary:
+
+            break;
+          case baudot:
+
+            break;
+          default:
+            mode = error;
+            Serial.println("unexpected case!");
+            writeBuffer.clear();
+            break;
+        }
+        if(!writeBuffer.add(letter))
         {
           Serial.println("Buffer overflow");
         }
