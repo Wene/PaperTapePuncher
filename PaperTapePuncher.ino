@@ -17,6 +17,11 @@
 
 int pins[] = {PinBit0, PinBit1, PinBit2, PinBit3, PinBit4, PinBit5, PinBit6, PinBit7};
 
+enum writeMode {error, ascii, binary, hex, dec, baudot};
+bool simulationMode = false;
+enum baudotMode {letters, figures};
+writeMode mode = error;
+
 Fifo writeBuffer;
 
 unsigned long lastTime = 0;
@@ -25,7 +30,6 @@ unsigned long highTime = 2;
 unsigned long lowTime = 18;
 bool isHigh = false;
 int value = 0;
-bool ok = false;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
@@ -43,144 +47,161 @@ void setup() {
   pinMode(PinTransportHole, OUTPUT);   // transport hole
   pinMode(PinTransportMotor, OUTPUT);  // Motor step
   pinMode(PinStepSensor, INPUT);       // Sensor for steps from manual operation
-  
-  delay(5000);
-  Serial.println("Ready");
 }
 
 void loop() {
+
+  //clear input buffer
   while(Serial.available())
   {
-    value = Serial.read();
-    if(value >= 0 && value < 256)
-    {
-      if(!writeBuffer.add(value))
-      {
-        Serial.println("Buffer overflow");
-      }
-    }
-    else
-    {
-      Serial.println("Read error");
-    }
+    Serial.read();
+    Serial.println();
+    Serial.println();
+    Serial.println();
   }
 
-  now = millis();
-  if(isHigh && now > (lastTime + highTime))
+  //print prompt
+  Serial.println("Select mode: (A)SCII, (B)inary, (H)EX, (D)ecimal, (5)-Bit Baudot");
+  Serial.print("Toggle (S)imulation mode: currently ");
+  if(simulationMode)
   {
-    digitalWrite(PinTransportHole, LOW);
-    digitalWrite(PinTransportMotor, LOW);
-    for(int i = 0; i < 8; i++)
-    {
-      digitalWrite(pins[i], LOW);
-    }
-    isHigh = false;
-    lastTime = now;
+    Serial.println("on");
   }
-  else if(!isHigh && now > (lastTime + lowTime))
+  else
   {
-    value = writeBuffer.take(ok);
-    if(ok)
-    {      
-      if(value & 1)
-      {
-        Serial.print("o");
-        digitalWrite(pins[0], HIGH);
-      }
-      else
-      {
-        Serial.print(".");
-      }
-      if(value & 2)
-      {
-        Serial.print("o");
-        digitalWrite(pins[1], HIGH);
-      }
-      else
-      {
-        Serial.print(".");
-      }
-      if(value & 4)
-      {
-        Serial.print("o");
-        digitalWrite(pins[2], HIGH);
-      }
-      else
-      {
-        Serial.print(".");
-      }
-      Serial.print(":");
-      if(value & 8)
-      {
-        Serial.print("o");
-        digitalWrite(pins[3], HIGH);
-      }
-      else
-      {
-        Serial.print(".");
-      }
-      if(value & 16)
-      {
-        Serial.print("o");
-        digitalWrite(pins[4], HIGH);
-      }
-      else
-      {
-        Serial.print(".");
-      }
-      if(value & 32)
-      {
-        Serial.print("o");
-        digitalWrite(pins[5], HIGH);
-      }
-      else
-      {
-        Serial.print(".");
-      }
-      if(value & 64)
-      {
-        Serial.print("o");
-        digitalWrite(pins[6], HIGH);
-      }
-      else
-      {
-        Serial.print(".");
-      }
-      if(value & 128)
-      {
-        Serial.print("o");
-        digitalWrite(pins[7], HIGH);
-      }
-      else
-      {
-        Serial.print(".");
-      }
-      
-      Serial.print("  ");
-      Serial.println(char(value));
+    Serial.println("off");
+  }
+  while(!Serial.available())
+  {
+    delay(10);
+  }
+  while(Serial.available())
+  {
+    int command;
+    byte letter;
+    
+    command = Serial.read();
+    letter = command;
+    
+    Serial.println();
+    
+    switch(letter)
+    {
+      case 'h':
+      case 'H':
+        mode = hex;
+        Serial.println("Enter HEX mode. Enter non HEX character to exit");
+        break;
+      case 'd':
+      case 'D':
+        mode = dec;
+        Serial.println("Enter decimal mode. Enter 3-digit numbers. Invalid input to quit");
+        break;
+      case 'b':
+      case 'B':    
+        mode = binary;
+        Serial.println("Enter binary mode. Reset to exit.");
+        break;
+      case 'a':
+      case 'A':
+        mode = ascii;
+        Serial.println("Enter ASCII mode. Enter a char over 127 to exit.");
+        break;
+      case '5':
+        mode = baudot;
+        Serial.println("Enter 5-Bit Baudot mode. Press escape to exit.");
+        break;
+      case 's':
+      case 'S':
+        simulationMode = !simulationMode;
+        break;
+      default:
+        mode = error;
+        Serial.println("Error - could not interpret your selection. Try again.");
+        break;
+    }
+    Serial.println();   
+  }
 
-      digitalWrite(PinTransportHole, HIGH);
-      digitalWrite(PinTransportMotor, HIGH);
-            
+  //punch in selected mode
+  while(mode != error && 1)
+  {
+    while(Serial.available())
+    {
+      value = Serial.read();
+      if(value >= 0 && value < 256)
+      {
+        if(!writeBuffer.add(value))
+        {
+          Serial.println("Buffer overflow");
+        }
+      }
+      else
+      {
+        Serial.println("Read error");
+      }
+    }
+    now = millis();
+    if(isHigh && now > (lastTime + highTime))
+    {
+      if(!simulationMode)
+      {
+        digitalWrite(PinTransportHole, LOW);
+        digitalWrite(PinTransportMotor, LOW);
+        for(int i = 0; i < 8; i++)
+        {
+          digitalWrite(pins[i], LOW);
+        }
+      }
+      isHigh = false;
+      lastTime = now;
+    }
+    else if(!isHigh && now > (lastTime + lowTime) && writeBuffer.available())
+    {
+      if(simulationMode)
+      {
+        simulate(writeBuffer.take());
+      }
+      else
+      {
+        punch(writeBuffer.take());
+      }
       isHigh = true;
       lastTime = now;
     }
   }
 }
 
-/*
-
+void simulate(byte character)
+{
   for(int i = 0; i < 8; i++)
   {
-    digitalWrite(pins[i], HIGH);
-    digitalWrite(PinTransportHole, HIGH);
-    digitalWrite(PinTransportMotor, HIGH);
-    delay(2);
-    digitalWrite(pins[i], LOW);
-    digitalWrite(PinTransportHole, LOW);
-    digitalWrite(PinTransportMotor, LOW);
-    delay(18);
+    if(character & 1 << i)
+    {
+      Serial.print("o");
+    }
+    else
+    {
+      Serial.print(".");
+    }
+    if(i == 2)
+    {
+      Serial.print(":");
+    }
   }
+  Serial.println();
+}
 
-*/
+void punch(byte character)
+{
+  for(int i = 0; i < 8; i++)
+  {
+    if(character & 1 << i)
+    {
+      digitalWrite(pins[i], HIGH);
+    }
+  }
+  digitalWrite(PinTransportHole, HIGH);
+  digitalWrite(PinTransportMotor, HIGH);          
+}
 

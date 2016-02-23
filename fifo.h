@@ -9,8 +9,9 @@ class Fifo
 {
 public:
   Fifo();
-  byte take(bool &ok);
+  byte take();
   bool add(byte value);
+  bool available();
 
 private:
   byte buffArray[BufferSize];

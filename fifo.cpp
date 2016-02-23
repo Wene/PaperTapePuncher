@@ -12,7 +12,7 @@ Fifo::Fifo()
   level = 0;
 }
 
-byte Fifo::take(bool &ok)
+byte Fifo::take()
 {
   if(level)
   {
@@ -23,12 +23,10 @@ byte Fifo::take(bool &ok)
     {
       posRead = 0;
     }
-    ok = true;
     return value;
   }
   else
   {
-    ok = false;
     return 0;
   }
 }
@@ -51,6 +49,18 @@ bool Fifo::add(byte value)
   else
   {
     return true;
+  }
+}
+
+bool Fifo::available()
+{
+  if(level)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
   }
 }
 
