@@ -138,6 +138,8 @@ void loop() {
       {
         switch(mode)
         {
+          case error:
+            break;
           case hex:
             if(hexBuffer.add(value))
             {
