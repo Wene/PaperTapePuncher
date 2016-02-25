@@ -4,7 +4,6 @@
 
 #include "Arduino.h"
 
-
 class Fifo
 {
 public:
@@ -20,6 +19,5 @@ private:
   int posWrite;
   int level;
 };
-
 
 #endif

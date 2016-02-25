@@ -2,6 +2,8 @@
    Control unit replacement for FACIT Paper tape puncher. */
 
 #include "fifo.h"
+#include "hex.h"
+#include "dec.h"
 
 #define PinBit0 10
 #define PinBit1 2
@@ -17,12 +19,14 @@
 
 int pins[] = {PinBit0, PinBit1, PinBit2, PinBit3, PinBit4, PinBit5, PinBit6, PinBit7};
 
-enum writeMode {error, ascii, binary, hex, dec, baudot};
-bool simulationMode = false;
+enum writeMode {error, ascii, binary, hex, dec, baudot, human};
+bool simulationMode = true;
 enum baudotMode {letters, figures};
 writeMode mode = error;
 
 Fifo writeBuffer;
+Hex hexBuffer;
+Dec decBuffer;
 
 unsigned long lastTime = 0;
 unsigned long now = 0;
@@ -30,7 +34,8 @@ unsigned long highTime = 2;
 unsigned long lowTime = 18;
 bool isHigh = false;
 int value = 0;
-byte letter = 0;
+byte character = 0;
+bool good = true;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
@@ -56,13 +61,11 @@ void loop() {
   while(Serial.available())
   {
     Serial.read();
-    Serial.println();
-    Serial.println();
-    Serial.println();
   }
 
   //print prompt
-  Serial.println("Select mode: (A)SCII, (B)inary, (H)EX, (D)ecimal, (5)-Bit Baudot");
+  Serial.println();
+  Serial.println("Select mode: (H)uman readable, (A)SCII, (B)inary, HE(X), (D)ecimal, (5)-Bit Baudot");
   Serial.print("Toggle (S)imulation mode: currently ");
   if(simulationMode)
   {
@@ -79,34 +82,38 @@ void loop() {
   while(Serial.available())
   {
     value = Serial.read();
-    letter = value;
+    character = value;
     Serial.println();
-    
-    switch(letter)
+    switch(character)
     {
       case 'h':
       case 'H':
+        mode = human;
+        Serial.println("Human readable mode - only ASCII allowed. Escape to exit");
+        break;
+      case 'x':
+      case 'X':
         mode = hex;
-        Serial.println("Enter HEX mode. Enter non HEX character to exit");
+        Serial.println("HEX mode - Enter non HEX character to exit");
         break;
       case 'd':
       case 'D':
         mode = dec;
-        Serial.println("Enter decimal mode. Enter 3-digit numbers. Invalid input to quit");
+        Serial.println("Decimal mode: Enter 3-digit numbers. Invalid input to quit");
         break;
       case 'b':
       case 'B':    
         mode = binary;
-        Serial.println("Enter binary mode. Reset to exit.");
+        Serial.println("Binary mode- Reset to exit.");
         break;
       case 'a':
       case 'A':
         mode = ascii;
-        Serial.println("Enter ASCII mode. Enter a char over 127 to exit.");
+        Serial.println("ASCII mode - Enter a char over 127 to exit.");
         break;
       case '5':
         mode = baudot;
-        Serial.println("Enter 5-Bit Baudot mode. Press escape to exit.");
+        Serial.println("5-Bit Baudot mode - Press escape to exit.");
         break;
       case 's':
       case 'S':
@@ -121,29 +128,84 @@ void loop() {
   }
 
   //punch in selected mode
-  while(mode != error && 1)
+  while(isHigh || mode != error)
   {
     while(Serial.available())
     {
+      good = true;
       value = Serial.read();
       if(value >= 0 && value < 256)
       {
         switch(mode)
         {
           case hex:
-            
+            if(hexBuffer.add(value))
+            {
+              if(hexBuffer.charReady())
+              {
+                good = writeBuffer.add(hexBuffer.character());
+              }
+            }
+            else
+            {
+              mode = error;
+              hexBuffer.reset();
+              Serial.println();
+              Serial.println("Input error - abort");
+              Serial.println();            }
+            break;
+          case human:
+            Serial.println("not implemented yet");
+            mode = error;
             break;
           case dec:
-            
+            if(decBuffer.add(value))
+            {
+              if(decBuffer.charReady())
+              {
+                good = writeBuffer.add(decBuffer.character());
+              }
+            }
+            else
+            {
+              mode = error;
+              decBuffer.reset();
+              Serial.println();
+              Serial.println("Input error - abort");
+              Serial.println();
+            }
             break;
           case ascii:
-
+            if(value <= 127)
+            {
+              int count = 0;
+              for(int i = 0; i < 7; i++)
+              {
+                if(value & 1 << i)
+                {
+                  count++;
+                }
+              }
+              if(count % 2)
+              {
+                value |= 1 << 7;
+              }
+              good = writeBuffer.add(value);
+            }
+            else
+            {
+              mode = error;
+              Serial.println();
+              Serial.println("Input error - abort");
+              Serial.println();              
+            }
             break;
           case binary:
-
+            good = writeBuffer.add(value);
             break;
           case baudot:
-
+            Serial.println("not implemented yet");
+            mode = error;
             break;
           default:
             mode = error;
@@ -151,9 +213,10 @@ void loop() {
             writeBuffer.clear();
             break;
         }
-        if(!writeBuffer.add(letter))
+        if(!good)
         {
           Serial.println("Buffer overflow");
+          mode = error;
         }
       }
       else
@@ -161,6 +224,8 @@ void loop() {
         Serial.println("Read error");
       }
     }
+
+    // handle punching and simulation
     now = millis();
     if(isHigh && now > (lastTime + highTime))
     {
