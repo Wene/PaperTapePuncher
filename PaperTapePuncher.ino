@@ -17,6 +17,10 @@
 #define PinTransportMotor 11
 #define PinStepSensor 12
 
+#define highTime 2
+#define lowTime 18
+#define waitTime 5000
+
 int pins[] = {PinBit0, PinBit1, PinBit2, PinBit3, PinBit4, PinBit5, PinBit6, PinBit7};
 
 enum writeMode {error, ascii, binary, hex, dec, baudot, human};
@@ -30,8 +34,6 @@ Dec decBuffer;
 
 unsigned long lastTime = 0;
 unsigned long now = 0;
-unsigned long highTime = 2;
-unsigned long lowTime = 18;
 bool isHigh = false;
 int value = 0;
 byte character = 0;
@@ -89,7 +91,7 @@ void loop() {
       case 'h':
       case 'H':
         mode = human;
-        Serial.println("Human readable mode - only ASCII allowed. Escape to exit");
+        Serial.println("Human readable mode - only ASCII allowed. Enter a char over 127 to exit.");
         break;
       case 'x':
       case 'X':
@@ -99,12 +101,13 @@ void loop() {
       case 'd':
       case 'D':
         mode = dec;
-        Serial.println("Decimal mode: Enter 3-digit numbers. Invalid input to quit");
+        Serial.println("Decimal mode: Enter 3-digit numbers. Invalid input to exit");
         break;
       case 'b':
       case 'B':    
         mode = binary;
-        Serial.println("Binary mode- Reset to exit.");
+        Serial.print("Binary mode - Wait for timeout to exit.");
+        lastTime = millis();
         break;
       case 'a':
       case 'A':
@@ -255,6 +258,11 @@ void loop() {
       }
       isHigh = true;
       lastTime = now;
+    }
+    else if(mode == binary && now > (lastTime + waitTime))
+    {
+      mode = error;
+      Serial.println("Timeout");
     }
   }
 }
