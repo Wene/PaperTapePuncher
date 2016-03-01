@@ -4,6 +4,7 @@
 #include "fifo.h"
 #include "hex.h"
 #include "dec.h"
+#include "human.h"
 
 #define PinBit0 10
 #define PinBit1 2
@@ -31,6 +32,7 @@ writeMode mode = error;
 Fifo writeBuffer;
 Hex hexBuffer;
 Dec decBuffer;
+Human humanBuffer;
 
 unsigned long lastTime = 0;
 unsigned long now = 0;
@@ -157,11 +159,25 @@ void loop() {
               hexBuffer.reset();
               Serial.println();
               Serial.println("Input error - abort");
-              Serial.println();            }
+              Serial.println();
+            }
             break;
           case human:
-            Serial.println("not implemented yet");
-            mode = error;
+            if(humanBuffer.add(value))
+            {
+              while(humanBuffer.charReady() && good)
+              {
+                good = writeBuffer.add(humanBuffer.character());
+              }
+            }
+            else
+            {
+              mode = error;
+              humanBuffer.reset();
+              Serial.println();
+              Serial.println("Input error - abort");
+              Serial.println(); 
+            }
             break;
           case dec:
             if(decBuffer.add(value))
@@ -222,6 +238,9 @@ void loop() {
         {
           Serial.println("Buffer overflow");
           mode = error;
+          hexBuffer.reset();
+          humanBuffer.reset();
+          decBuffer.reset();
         }
       }
       else
