@@ -69,15 +69,47 @@ bool Human::add(byte input)
         endPos = 3;
        break;
       case 35:  // #
-        break;
+        buffer[0] = 0x14;
+        buffer[1] = 0x7f;
+        buffer[2] = 0x14;
+        buffer[3] = 0x7f;
+        buffer[4] = 0x14;
+        buffer[5] = 0x00;
+        endPos = 5;
+       break;
       case 36:  // $
+        buffer[0] = 0x12;
+        buffer[1] = 0x2a;
+        buffer[2] = 0x7f;
+        buffer[3] = 0x2a;
+        buffer[4] = 0x24;
+        buffer[5] = 0x00;
+        endPos = 5;
         break;
       case 37:  // %
-        break;
+        buffer[0] = 0x62;
+        buffer[1] = 0x64;
+        buffer[2] = 0x08;
+        buffer[3] = 0x13;
+        buffer[4] = 0x23;
+        buffer[5] = 0x00;
+        endPos = 5;
+       break;
       case 38:  // &
-        break;
+        buffer[0] = 0x36;
+        buffer[1] = 0x49;
+        buffer[2] = 0x55;
+        buffer[3] = 0x22;
+        buffer[4] = 0x05;
+        buffer[5] = 0x00;
+        endPos = 5;
+       break;
       case 39:  // '
-        break;
+        buffer[0] = 0x50;
+        buffer[1] = 0x60;
+        buffer[2] = 0x00;
+        endPos = 2;
+       break;
       case 40:  // (
         buffer[0] = 0x1c;
         buffer[1] = 0x22;
@@ -240,6 +272,12 @@ bool Human::add(byte input)
         endPos = 4;
        break;
       case 61:  // =
+        buffer[0] = 0x14;
+        buffer[1] = 0x14;
+        buffer[2] = 0x14;
+        buffer[3] = 0x14;
+        buffer[4] = 0x00;
+        endPos = 4;
         break;
       case 62:  // >
         buffer[0] = 0x41;
@@ -259,7 +297,14 @@ bool Human::add(byte input)
         endPos = 5;
         break;
       case 64:  // @
-        break;
+        buffer[0] = 0x26;
+        buffer[1] = 0x49;
+        buffer[2] = 0x4f;
+        buffer[3] = 0x41;
+        buffer[4] = 0x3e;
+        buffer[5] = 0x00;
+        endPos = 5;
+       break;
       case 65:  // A
         buffer[0] = 0x3f;
         buffer[1] = 0x44;
@@ -484,7 +529,7 @@ bool Human::add(byte input)
         buffer[3] = 0x00;
         endPos = 3;
         break;
-      case 92:  // \
+      case 92:  // backslash
         buffer[0] = 0x60;
         buffer[1] = 0x18;
         buffer[2] = 0x04;
@@ -500,6 +545,13 @@ bool Human::add(byte input)
         endPos = 3;
        break;
       case 94:  // ^
+        buffer[0] = 0x10;
+        buffer[1] = 0x20;
+        buffer[2] = 0x40;
+        buffer[3] = 0x20;
+        buffer[4] = 0x10;
+        buffer[5] = 0x00;
+        endPos = 5;
         break;
       case 95:  // _
         buffer[0] = 0x01;
@@ -510,67 +562,248 @@ bool Human::add(byte input)
         endPos = 4;
         break;
       case 96:  // `
+        buffer[0] = 0x50;
+        buffer[1] = 0x30;
+        buffer[2] = 0x00;
+        endPos = 2;
         break;
       case 97:  // a
+        buffer[0] = 0x0a;
+        buffer[1] = 0x15;
+        buffer[2] = 0x15;
+        buffer[3] = 0x0f;
+        buffer[4] = 0x00;
+        endPos = 4;
         break;
       case 98:  // b
+        buffer[0] = 0x7f;
+        buffer[1] = 0x09;
+        buffer[2] = 0x09;
+        buffer[3] = 0x06;
+        buffer[4] = 0x00;
+        endPos = 4;
         break;
       case 99:  // c
+        buffer[0] = 0x0e;
+        buffer[1] = 0x11;
+        buffer[2] = 0x11;
+        buffer[3] = 0x0a;
+        buffer[4] = 0x00;
+        endPos = 4;
         break;
       case 100:  // d
-        break;
+        buffer[0] = 0x06;
+        buffer[1] = 0x09;
+        buffer[2] = 0x09;
+        buffer[3] = 0x7f;
+        buffer[4] = 0x00;
+        endPos = 4;
+       break;
       case 101:  // e
+        buffer[0] = 0x0e;
+        buffer[1] = 0x15;
+        buffer[2] = 0x15;
+        buffer[3] = 0x0c;
+        buffer[4] = 0x00;
+        endPos = 4;
         break;
       case 102:  // f
-        break;
+        buffer[0] = 0x08;
+        buffer[1] = 0x3f;
+        buffer[2] = 0x48;
+        buffer[3] = 0x00;
+        endPos = 3;
+       break;
       case 103:  // g
-        break;
+        buffer[0] = 0x08;
+        buffer[1] = 0x15;
+        buffer[2] = 0x15;
+        buffer[3] = 0x1e;
+        buffer[4] = 0x00;
+        endPos = 4;
+       break;
       case 104:  // h
+        buffer[0] = 0x7f;
+        buffer[1] = 0x08;
+        buffer[2] = 0x10;
+        buffer[3] = 0x0f;
+        buffer[4] = 0x00;
+        endPos = 4;
         break;
       case 105:  // i
+        buffer[0] = 0x11;
+        buffer[1] = 0x5f;
+        buffer[2] = 0x01;
+        buffer[3] = 0x00;
+        endPos = 3;
         break;
       case 106:  // j
+        buffer[0] = 0x02;
+        buffer[1] = 0x11;
+        buffer[2] = 0x5e;
+        buffer[3] = 0x00;
+        endPos = 3;
         break;
       case 107:  // k
+        buffer[0] = 0x7f;
+        buffer[1] = 0x04;
+        buffer[2] = 0x0a;
+        buffer[3] = 0x11;
+        buffer[4] = 0x00;
+        endPos = 4;
         break;
       case 108:  // l
+        buffer[0] = 0x41;
+        buffer[1] = 0x7f;
+        buffer[2] = 0x01;
+        buffer[3] = 0x00;
+        endPos = 3;
         break;
       case 109:  // m
+        buffer[0] = 0x1f;
+        buffer[1] = 0x10;
+        buffer[2] = 0x0c;
+        buffer[3] = 0x10;
+        buffer[4] = 0x0f;
+        buffer[5] = 0x00;
+        endPos = 5;
         break;
       case 110:  // n
-        break;
+        buffer[0] = 0x1f;
+        buffer[1] = 0x08;
+        buffer[2] = 0x10;
+        buffer[3] = 0x0f;
+        buffer[4] = 0x00;
+        endPos = 4;
+       break;
       case 111:  // o
+        buffer[0] = 0x0e;
+        buffer[1] = 0x11;
+        buffer[2] = 0x11;
+        buffer[3] = 0x0e;
+        buffer[4] = 0x00;
+        endPos = 4;
         break;
       case 112:  // p
-        break;
+        buffer[0] = 0x1f;
+        buffer[1] = 0x14;
+        buffer[2] = 0x14;
+        buffer[3] = 0x08;
+        buffer[4] = 0x00;
+        endPos = 4;
+       break;
       case 113:  // q
-        break;
+        buffer[0] = 0x08;
+        buffer[1] = 0x14;
+        buffer[2] = 0x14;
+        buffer[3] = 0x1f;
+        buffer[4] = 0x00;
+        endPos = 4;
+       break;
       case 114:  // r
+        buffer[0] = 0x1f;
+        buffer[1] = 0x08;
+        buffer[2] = 0x10;
+        buffer[3] = 0x08;
+        buffer[4] = 0x00;
+        endPos = 4;
         break;
       case 115:  // s
-        break;
+        buffer[0] = 0x09;
+        buffer[1] = 0x15;
+        buffer[2] = 0x15;
+        buffer[3] = 0x12;
+        buffer[4] = 0x00;
+        endPos = 4;
+       break;
       case 116:  // t
+        buffer[0] = 0x10;
+        buffer[1] = 0x7e;
+        buffer[2] = 0x11;
+        buffer[3] = 0x02;
+        buffer[4] = 0x00;
+        endPos = 4;
         break;
       case 117:  // u
+        buffer[0] = 0x1e;
+        buffer[1] = 0x01;
+        buffer[2] = 0x02;
+        buffer[3] = 0x1f;
+        buffer[4] = 0x00;
+        endPos = 4;
         break;
       case 118:  // v
+        buffer[0] = 0x1c;
+        buffer[1] = 0x02;
+        buffer[2] = 0x01;
+        buffer[3] = 0x02;
+        buffer[4] = 0x1c;
+        buffer[5] = 0x00;
+        endPos = 5;
         break;
       case 119:  // w
-        break;
+        buffer[0] = 0x1e;
+        buffer[1] = 0x01;
+        buffer[2] = 0x06;
+        buffer[3] = 0x01;
+        buffer[4] = 0x1e;
+        buffer[5] = 0x00;
+        endPos = 5;
+       break;
       case 120:  // x
-        break;
+        buffer[0] = 0x11;
+        buffer[1] = 0x0a;
+        buffer[2] = 0x04;
+        buffer[3] = 0x0a;
+        buffer[4] = 0x11;
+        buffer[5] = 0x00;
+        endPos = 5;
+       break;
       case 121:  // y
-        break;
+        buffer[0] = 0x19;
+        buffer[1] = 0x05;
+        buffer[2] = 0x05;
+        buffer[3] = 0x1e;
+        buffer[4] = 0x00;
+        endPos = 4;
+       break;
       case 122:  // z
+        buffer[0] = 0x11;
+        buffer[1] = 0x13;
+        buffer[2] = 0x15;
+        buffer[3] = 0x19;
+        buffer[4] = 0x11;
+        buffer[5] = 0x00;
+        endPos = 5;
         break;
       case 123:  // {
+        buffer[0] = 0x08;
+        buffer[1] = 0x36;
+        buffer[2] = 0x41;
+        buffer[3] = 0x00;
+        endPos = 3;
         break;
       case 124:  // |
+        buffer[0] = 0x7f;
+        buffer[1] = 0x00;
+        endPos = 1;
         break;
       case 125:  // }
+        buffer[0] = 0x41;
+        buffer[1] = 0x36;
+        buffer[2] = 0x08;
+        buffer[3] = 0x00;
+        endPos = 3;
         break;
       case 126:  // ~
-        break;
+        buffer[0] = 0x10;
+        buffer[1] = 0x20;
+        buffer[2] = 0x10;
+        buffer[3] = 0x08;
+        buffer[4] = 0x10;
+        buffer[5] = 0x00;
+        endPos = 5;
+       break;
       default:
         return false;
         break;
