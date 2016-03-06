@@ -5,6 +5,7 @@
 #include "hex.h"
 #include "dec.h"
 #include "human.h"
+#include "baudot.h"
 
 #define PinBit0 10
 #define PinBit1 2
@@ -33,6 +34,7 @@ Fifo writeBuffer;
 Hex hexBuffer;
 Dec decBuffer;
 Human humanBuffer;
+Baudot baudotBuffer;
 
 unsigned long lastTime = 0;
 unsigned long now = 0;
@@ -225,8 +227,21 @@ void loop() {
             good = writeBuffer.add(value);
             break;
           case baudot:
-            Serial.println("not implemented yet");
-            mode = error;
+            if(baudotBuffer.set(value))
+            {
+              while(baudotBuffer.charReady() && good)
+              {
+                good = writeBuffer.add(baudotBuffer.character());
+              }
+            }
+            else
+            {
+              mode = error;
+              Serial.println();
+              Serial.println("Input error - abort");
+              Serial.println();              
+
+            }
             break;
           default:
             mode = error;
