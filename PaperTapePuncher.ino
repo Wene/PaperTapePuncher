@@ -237,6 +237,7 @@ void loop() {
             else
             {
               mode = error;
+              baudotBuffer.reset();
               Serial.println();
               Serial.println("Input error - abort");
               Serial.println();              
@@ -256,6 +257,7 @@ void loop() {
           hexBuffer.reset();
           humanBuffer.reset();
           decBuffer.reset();
+          baudotBuffer.reset();
         }
       }
       else

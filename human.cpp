@@ -356,8 +356,8 @@ bool Human::add(byte input)
       case 71:  // G
         buffer[0] = 0x3e;
         buffer[1] = 0x41;
-        buffer[2] = 0x45;
-        buffer[3] = 0x26;
+        buffer[2] = 0x49;
+        buffer[3] = 0x2e;
         buffer[4] = 0x00;
         endPos = 4;
         break;
@@ -615,7 +615,7 @@ bool Human::add(byte input)
         endPos = 3;
        break;
       case 103:  // g
-        buffer[0] = 0x08;
+        buffer[0] = 0x09;
         buffer[1] = 0x15;
         buffer[2] = 0x15;
         buffer[3] = 0x1e;

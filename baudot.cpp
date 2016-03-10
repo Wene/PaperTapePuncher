@@ -290,5 +290,13 @@ bool Baudot::set(byte input)
     }
   }
 
+  if(buffer == 0)
+  {
+    return false;
+  }
+  else
+  {
+    return true;
+  }
 }
 
