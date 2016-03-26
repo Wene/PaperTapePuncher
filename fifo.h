@@ -12,6 +12,7 @@ public:
   bool add(byte value);
   bool available();
   void clear();
+  bool almostFull();
 
 private:
   byte buffArray[BufferSize];

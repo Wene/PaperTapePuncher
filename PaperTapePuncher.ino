@@ -23,6 +23,9 @@
 #define lowTime 18
 #define waitTime 5000
 
+#define XON 17
+#define XOFF 19
+
 int pins[] = {PinBit0, PinBit1, PinBit2, PinBit3, PinBit4, PinBit5, PinBit6, PinBit7};
 
 enum writeMode {error, ascii, binary, hex, dec, baudot, human};
@@ -42,6 +45,8 @@ bool isHigh = false;
 int value = 0;
 byte character = 0;
 bool good = true;
+
+bool xonSendt = true;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
@@ -264,6 +269,18 @@ void loop() {
       {
         Serial.println("Read error");
       }
+    }
+
+    // Flow control
+    if(xonSendt && writeBuffer.almostFull())
+    {
+      Serial.write(XOFF);
+      xonSendt = false;
+    }
+    else if(!xonSendt && !writeBuffer.almostFull())
+    {
+      Serial.write(XON);
+      xonSendt = true;
     }
 
     // handle punching and simulation

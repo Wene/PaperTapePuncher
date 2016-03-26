@@ -69,3 +69,15 @@ void Fifo::clear()
   level = 0;
 }
 
+bool Fifo::almostFull()
+{
+  if(level > BufferSize / 3)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
