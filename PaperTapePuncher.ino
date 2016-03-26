@@ -90,54 +90,51 @@ void loop() {
   {
     delay(10);
   }
-  while(Serial.available())
+  value = Serial.read();
+  character = value;
+  Serial.println();
+  switch(character)
   {
-    value = Serial.read();
-    character = value;
-    Serial.println();
-    switch(character)
-    {
-      case 'h':
-      case 'H':
-        mode = human;
-        Serial.println("Human readable mode - only ASCII allowed. Enter a char over 127 to exit.");
-        break;
-      case 'x':
-      case 'X':
-        mode = hex;
-        Serial.println("HEX mode - Enter non HEX character to exit");
-        break;
-      case 'd':
-      case 'D':
-        mode = dec;
-        Serial.println("Decimal mode: Enter 3-digit numbers. Invalid input to exit");
-        break;
-      case 'b':
-      case 'B':    
-        mode = binary;
-        Serial.print("Binary mode - Wait for timeout to exit.");
-        lastTime = millis();
-        break;
-      case 'a':
-      case 'A':
-        mode = ascii;
-        Serial.println("ASCII mode - Enter a char over 127 to exit.");
-        break;
-      case '5':
-        mode = baudot;
-        Serial.println("5-Bit Baudot mode - Press escape to exit.");
-        break;
-      case 's':
-      case 'S':
-        simulationMode = !simulationMode;
-        break;
-      default:
-        mode = error;
-        Serial.println("Error - could not interpret your selection. Try again.");
-        break;
-    }
-    Serial.println();   
+    case 'h':
+    case 'H':
+      mode = human;
+      Serial.println("Human readable mode - only ASCII allowed. Enter a char over 127 to exit.");
+      break;
+    case 'x':
+    case 'X':
+      mode = hex;
+      Serial.println("HEX mode - Enter non HEX character to exit");
+      break;
+    case 'd':
+    case 'D':
+      mode = dec;
+      Serial.println("Decimal mode: Enter 3-digit numbers. Invalid input to exit");
+      break;
+    case 'b':
+    case 'B':    
+      mode = binary;
+      Serial.print("Binary mode - Wait for timeout to exit.");
+      lastTime = millis();
+      break;
+    case 'a':
+    case 'A':
+      mode = ascii;
+      Serial.println("ASCII mode - Enter a char over 127 to exit.");
+      break;
+    case '5':
+      mode = baudot;
+      Serial.println("5-Bit Baudot mode - Press escape to exit.");
+      break;
+    case 's':
+    case 'S':
+      simulationMode = !simulationMode;
+      break;
+    default:
+      mode = error;
+      Serial.println("Error - could not interpret your selection. Try again.");
+      break;
   }
+  Serial.println();   
 
   //punch in selected mode
   while(isHigh || mode != error)
