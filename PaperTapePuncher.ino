@@ -25,6 +25,7 @@
 
 #define XON 17
 #define XOFF 19
+#define EOT 4
 
 int pins[] = {PinBit0, PinBit1, PinBit2, PinBit3, PinBit4, PinBit5, PinBit6, PinBit7};
 
@@ -47,6 +48,7 @@ byte character = 0;
 bool good = true;
 
 bool xonSendt = true;
+bool eotSendt = false;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
@@ -308,6 +310,14 @@ void loop() {
       }
       isHigh = true;
       lastTime = now;
+      // At this position, obviously there is data in the buffer. Therefore reset the EOT marker
+      eotSendt = false;
+    }
+    else if(!eotSendt && !writeBuffer.available())
+    {
+      // send EOT to the GUI Appliaction an the end of the buffer
+      eotSendt = true;
+      Serial.write(EOT);
     }
     else if(mode == binary && now > (lastTime + waitTime))
     {
