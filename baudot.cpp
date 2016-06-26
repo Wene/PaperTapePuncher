@@ -54,7 +54,7 @@ byte Baudot::character()
     buffer = 0;
   }
   // for compatibility with 8-Bit paper tape and reader allways punch the high 3 holes
-  tmp += 224;
+  //tmp += 224;
   return tmp;
 }
 
@@ -241,6 +241,14 @@ bool Baudot::set(byte input)
       break;
     case '?':
       buffer = 19;
+      nextChar = figures;
+      break;
+    case ':':
+      buffer = 14;
+      nextChar = figures;
+      break;
+    case '=':
+      buffer = 15;
       nextChar = figures;
       break;
     case '(':
