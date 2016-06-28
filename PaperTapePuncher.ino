@@ -54,7 +54,7 @@ bool eotSendt = false;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
-  Serial.begin(115200);
+  Serial.begin(38400);
   
   // initialize the input pins
   pinMode(PinBit0, OUTPUT); // bit 0
