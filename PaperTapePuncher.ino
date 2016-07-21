@@ -16,10 +16,10 @@
 #define PinBit6 7
 #define PinBit7 8
 #define PinTransportHole 9
-#define PinTransportMotor 11
-//#define PinTransportMotor 16
-#define PinStepSensor 12
-//#define PinStepSensor 14
+//#define PinTransportMotor 11
+#define PinTransportMotor 16
+//#define PinStepSensor 12
+#define PinStepSensor 14
 
 #define highTime 2
 #define lowTime 18

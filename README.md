@@ -7,6 +7,7 @@ Control unit replacement for FACIT Paper tape puncher.
 To connect to the reader use a serial terminal emulator. With Linux for
 example use
 
-screen /dev/ttyUSB0 115200 
+screen /dev/ttyUSB0 38400 
 
-This project is in a very early development state. Stay tuned for update...
+A detailed documentation (in german) is found at
+https://ruum42.ch/paper-tape-puncher
