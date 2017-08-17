@@ -53,8 +53,6 @@ byte Baudot::character()
     tmp = buffer;
     buffer = 0;
   }
-  // for compatibility with 8-Bit paper tape and reader allways punch the high 3 holes
-  //tmp += 224;
   return tmp;
 }
 
@@ -174,13 +172,13 @@ bool Baudot::set(byte input)
       buffer = 17;
       nextChar = letters;
       break;
-    case 13:                      // TODO: check if CR and LF allways are together
+    case 13:    // CR
       buffer = 2;
       break;
     case ' ':
       buffer = 4;
       break;
-    case 10:                      // TODO: check if CR and LF allways are together
+    case 10:    // LF
       buffer = 8;
       break;
     case '0':
@@ -280,6 +278,16 @@ bool Baudot::set(byte input)
     case 5:     // ENQ resp. "who are you?"
       buffer = 18;
       nextChar = figures;
+      break;
+    case 127:   // DEL
+      if(bMode == figures)
+      {
+        buffer = 27;    // figures
+      }
+      else
+      {
+        buffer = 31;    // letters
+      }
       break;
     default:
       buffer = 0;
