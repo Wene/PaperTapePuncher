@@ -7,7 +7,12 @@
 #include "human.h"
 #include "baudot.h"
 
-#define PinBit0 10
+// Arduino Pro Mini
+// #define PinBit0 10
+
+// Arduino Nano
+#define PinBit0 14
+
 #define PinBit1 2
 #define PinBit2 3
 #define PinBit3 4
@@ -18,8 +23,14 @@
 #define PinTransportHole 9
 
 // Arduino Pro Mini (ATMega328)
-#define PinTransportMotor 11
-#define PinStepSensor 12
+// #define PinTransportMotor 11
+// #define PinStepSensor 12
+
+
+// Arduino Nano
+#define PinTransportMotor 15
+#define PinStepSensor 16
+
 
 // Arduino Pro Micro (ATmega32U4)
 //#define PinTransportMotor 16
@@ -365,4 +376,3 @@ void punch(byte character)
   digitalWrite(PinTransportHole, HIGH);
   digitalWrite(PinTransportMotor, HIGH);          
 }
-
